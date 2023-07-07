@@ -1,28 +1,59 @@
-products = [];
-
-class ProductManager {
-    constructor (title, description, price, thumbnail, code, stock) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.thumbnail = thumbnail;
-        this.code = code;
-        this.stock = stock; 
+class ProductManager {
+    constructor() {
+        this.products = [];
     }
-addProduct() {
-    products.forEach(element => {
-        element.includes(code) && products.push();
 
-    })
+    getProducts() {
+        return this.products;
+    }
 
-}
 
-getProducts() {
-console.log(productos); 
-}
-}
+    addProduct(title, description, price, thumbnail, code, stock) {
+        // Verifico si el código ya existe en el array de productos
+        const checkearProducto = this.products.some((product) => product.code === code);
+    
+        if (!checkearProducto) {
+          const producto = {
+            title: title,
+            description: description,
+            price: price,
+            thumbnail: thumbnail,
+            code: code,
+            stock: stock,
+            id: this.getId()
+          };
+    
+          this.products.push(producto);
+        }
+      }
+    
+      getId() {
+        let max = 0;
+    
+        this.products.forEach((producto) => {
+          max = producto.id > max ? producto.id : max;
+        });
+    
+        return max + 1;
+      }
 
-let product1 = new ProductManager("Producto prueba", "Desc prueba", 10000, "Sin imagen", 123123, 20)
-product1.addProduct();
+      getProductById(id) {
+        const product = this.products.find((product) => product.id === id);
+    
+        if (product) {
+          return product;
+        } else {
+          console.log("Not found");
+        }
+      }
+    }
 
-getProducts();
+const newProd = new ProductManager();
+newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
+newProd.addProduct("Pepsi", "Gaseosa sabor cola", 600, "Sin imagen", "P123", 20)
+newProd.addProduct("Coca Cola Zero", "Gaseosa sabor cola baja en azúcar", 750, "Sin imagen", "CC123", 20)
+newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20)
+
+
+console.log(newProd.getProducts());
+console.log(newProd.getProductById(2));
