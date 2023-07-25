@@ -47,6 +47,7 @@ class ProductManager {
         }
       }
     }
+      
 
 const newProd = new ProductManager();
 newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
