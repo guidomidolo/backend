@@ -1,29 +1,50 @@
 const fs = require("fs");
-let arrayLocation = "arrayProductos.txt"
+let arrayLocation = "arrayProductos.txt";
 
 class ProductManager {
     constructor(arrayProductos = []) {
         this.products = arrayProductos;
         this.path = arrayLocation;
-        fs.writeFile(arrayLocation, JSON.stringify(arrayProductos), (error => {
-            error ? console.log("No se pudo crear el archivo.") : console.log("Archivo creado correctamente.");
-        }))
+
+        // Verificar si el archivo existe y contiene datos
+        if (fs.existsSync(this.path)) {
+            this.readProductsFromFile().then((data) => {
+                this.products = JSON.parse(data);
+            }).catch((error) => {
+                console.log(error);
+            });
+        } else {
+            // Si el archivo no existe, crearlo con un arreglo vacío
+            fs.writeFile(this.path, JSON.stringify(this.products), (error) => {
+                if (error) {
+                    console.log("No se pudo crear el archivo.");
+                } else {
+                    console.log("Archivo creado correctamente.");
+                }
+            });
+        }
     }
-    
-    
-    getProducts() {
+
+    readProductsFromFile() {
         return new Promise((resolve, reject) => {
             fs.readFile(this.path, "utf-8", (error, data) => {
                 if (error) {
                     reject("No se pudo leer el archivo");
                 } else {
-                    resolve(JSON.parse(data));
+                    resolve(data);
                 }
             });
         });
     }
 
-
+    getProducts() {
+        return this.readProductsFromFile().then((data) => {
+            return JSON.parse(data);
+        }).catch((error) => {
+            console.log(error);
+            return [];
+        });
+    }
 
     addProduct(title, description, price, thumbnail, code, stock) {
         const producto = {
@@ -35,10 +56,11 @@ class ProductManager {
             stock: stock,
             id: this.getId()
         };
+
         this.products.push(producto);
 
         return new Promise((resolve, reject) => {
-            fs.writeFile(arrayLocation, JSON.stringify(this.products), (error) => {
+            fs.writeFile(this.path, JSON.stringify(this.products), (error) => {
                 if (error) {
                     console.log("No se pudo escribir el archivo");
                     reject();
@@ -50,97 +72,78 @@ class ProductManager {
         });
     }
 
-
     getId() {
         let max = 0;
-
         this.products.forEach((producto) => {
             max = producto.id > max ? producto.id : max;
         });
-
         return max + 1;
     }
 
     getProductById(id) {
-        return new Promise((resolve, reject) => {
-            fs.readFile(this.path, "utf-8", (error, data) => {
-                if (error) {
-                    reject("No se pudo leer el archivo");
-                } else {
-                    try {
-                        const arrayProductos = JSON.parse(data);
-                        const product = arrayProductos.find((product) => product.id === id);
-                        if (product) {
-                            resolve(product);
-                        } else {
-                            reject("Not found");
-                        }
-                    } catch (error) {
-                        reject("Error al analizar el contenido del archivo");
-                    }
-                }
-            });
+        return this.readProductsFromFile().then((data) => {
+            const arrayProductos = JSON.parse(data);
+            const product = arrayProductos.find((product) => product.id === id);
+            if (product) {
+                return product;
+            } else {
+                throw new Error("Producto no encontrado");
+            }
+        }).catch((error) => {
+            console.log(error);
+            throw error;
         });
     }
 
     deleteProduct(id) {
-        return new Promise((resolve, reject) => {
-            fs.readFile(this.path, "utf-8", (error, data) => {
-                if (error) {
-                    reject("No se pudo leer el archivo");
-                } else {
-                    try {
-                        const arrayProductos = JSON.parse(data);
-                        const pos = arrayProductos.findIndex((product) => product.id === id);
-                        if (pos !== -1) {
-                            arrayProductos.splice(pos, 1);
-                            fs.writeFile(arrayLocation, JSON.stringify(arrayProductos), (error) => {
-                                if (error) {
-                                    console.log("No se pudo escribir el archivo");
-                                    reject();
-                                } else {
-                                    console.log("Producto eliminado");
-                                    resolve();
-                                }
-                            });
+        return this.readProductsFromFile().then((data) => {
+            const arrayProductos = JSON.parse(data);
+            const pos = arrayProductos.findIndex((product) => product.id === id);
+            if (pos !== -1) {
+                arrayProductos.splice(pos, 1);
+                return new Promise((resolve, reject) => {
+                    fs.writeFile(this.path, JSON.stringify(arrayProductos), (error) => {
+                        if (error) {
+                            console.log("No se pudo escribir el archivo");
+                            reject();
                         } else {
-                            reject("Producto no encontrado");
+                            console.log("Producto eliminado");
+                            resolve();
                         }
-                    } catch (error) {
-                        reject("Error al analizar el contenido del archivo");
-                    }
-                }
-            });
+                    });
+                });
+            } else {
+                throw new Error("Producto no encontrado");
+            }
+        }).catch((error) => {
+            console.log(error);
+            throw error;
         });
     }
+
     updateProduct(id, field, value) {
-        return new Promise((resolve, reject) => {
-            fs.readFile(this.path, "utf-8", (error, data) => {
-                if (error) {
-                    reject("No se pudo leer el archivo");
-                } else {
-                    try {
-                        const arrayProductos = JSON.parse(data);
-                        const product = arrayProductos.find((product) => product.id === id);
-                        if (product) {
-                            product[field] = value;
-                            fs.writeFile(arrayLocation, JSON.stringify(arrayProductos), (error) => {
-                                if (error) {
-                                    console.log("No se pudo escribir el archivo");
-                                    reject();
-                                } else {
-                                    console.log("Producto actualizado");
-                                    resolve(product);
-                                }
-                            });
+        return this.readProductsFromFile().then((data) => {
+            const arrayProductos = JSON.parse(data);
+            const product = arrayProductos.find((product) => product.id === id);
+            if (product) {
+                product[field] = value;
+                return new Promise((resolve, reject) => {
+                    fs.writeFile(this.path, JSON.stringify(arrayProductos), (error) => {
+                        if (error) {
+                            console.log("No se pudo escribir el archivo");
+                            reject();
                         } else {
-                            reject("Producto no encontrado");
+                            console.log("Producto actualizado");
+                            resolve(product);
                         }
-                    } catch (error) {
-                        reject("Error al analizar el contenido del archivo");
-                    }
-                }
-            });
+                    });
+                });
+            } else {
+                throw new Error("Producto no encontrado");
+            }
+        }).catch((error) => {
+            console.log(error);
+            throw error;
         });
     }
 }
@@ -148,42 +151,20 @@ class ProductManager {
 module.exports = { ProductManager };
 
 const newProd = new ProductManager();
-// newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
-newProd.addProduct("Pepsi", "Gaseosa sabor cola", 600, "Sin imagen", "P123", 20)
-newProd.addProduct("Coca Cola Zero", "Gaseosa sabor cola baja en azúcar", 750, "Sin imagen", "CC123", 20)
-newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20)
-// newProd.getProducts()
-//     .then((product) => {
-//         console.log(product);
-//     })
-//     .catch((error) => {
-//         console.log(error);
-//     });
-// newProd.getProductById(2)
-//   .then((product) => {
-//     console.log(product);
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });
-// newProd.deleteProduct()
-//   .then((mensaje) => {
-//     console.log(mensaje);
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });
-// newProd.deleteProduct(1)
-//   .then((mensaje) => {
-//     console.log(mensaje);
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });
-newProd.updateProduct(3, this.title, "Naranpol")
-  .then((mensaje) => {
-    console.log(mensaje);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+
+///////PRUEBAS AÑADIR PRODUCTOS
+newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
+    .then(() => newProd.addProduct("Pepsi", "Gaseosa sabor cola", 600, "Sin imagen", "P123", 20))
+    .then(() => newProd.addProduct("Coca Cola Zero", "Gaseosa sabor cola baja en azúcar", 750, "Sin imagen", "CC123", 20))
+    .then(() => newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20))
+
+//////PRUEBA ACTUALIZAR PRODUCTO
+    newProd.updateProduct(2, "title", "Manaos Cola")
+    
+    .then(() => newProd.getProducts())
+    .then((products) => {
+        console.log(products);
+    })
+    .catch((error) => {
+        console.log(error);
+    });

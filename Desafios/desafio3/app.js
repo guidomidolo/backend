@@ -1,9 +1,3 @@
-
-// const express = require("express");
-// const puerto = 8080;
-// const app = express ();
-// const { productManager } = require("./ProductManager.js")
-
 const express = require("express");
 const port = 8080;
 const app = express();
@@ -12,7 +6,6 @@ const { ProductManager } = require("./ProductManager");
 const productManager = new ProductManager();
 
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/products", async (req, res) => {
@@ -35,18 +28,14 @@ app.get("/products/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
     const products = await productManager.getProducts();
-    const existProduct = products.find((prod) => prod.id === Number(pid));
-    const response = existProduct
-      ? existProduct
-      : {
-          error: `No se encontró el producto con el id ${pid} en nuestra base de datos`,
-        };
-    res.status(existProduct ? 200 : 400).send(response);
+    const productExists = products.find((prod) => prod.id === Number(pid));
+    const response = productExists ? productExists: {error: `No se encontró el producto con el id ${pid} en nuestra base de datos`};
+    res.status(productExists ? 200 : 400).send(response);
   } catch (error) {
     console.log(error);
   }
 });
 
 app.listen(port, () => {
-  console.log(`Servidor conectado al puerto: ${port}`);
+  console.log("Servidor conectado al puerto: " + port);
 });
