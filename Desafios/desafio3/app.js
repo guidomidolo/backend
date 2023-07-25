@@ -5,7 +5,7 @@
 // const { productManager } = require("./ProductManager.js")
 
 const express = require("express");
-const PORT = 8080;
+const port = 8080;
 const app = express();
 const { ProductManager } = require("./ProductManager");
 
@@ -47,6 +47,6 @@ app.get("/products/:pid", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor conectado al puerto: ${PORT}`);
+app.listen(port, () => {
+  console.log(`Servidor conectado al puerto: ${port}`);
 });
