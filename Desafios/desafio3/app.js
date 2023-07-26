@@ -11,13 +11,13 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/products", async (req, res) => {
   try {
     const limit = Number(req.query.limit);
-    const productsList = await productManager.getProducts();
+    const products = await productManager.getProducts();
     if (limit) {
-      let arrayProds = [...productsList];
-      const productsLimit = arrayProds.slice(0, limit);
-      return res.send(productsLimit);
+      let arrayProducts = [...products];
+      const limitedProducts = arrayProducts.slice(0, limit);
+      return res.send(limitedProducts);
     } else {
-      res.send(productsList);
+      res.send(products);
     }
   } catch (error) {
     console.log(error);
