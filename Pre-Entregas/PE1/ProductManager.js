@@ -159,7 +159,7 @@ newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123"
     .then(() => newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20))
 
 // //////PRUEBA ACTUALIZAR PRODUCTO
-//     newProd.updateProduct(2, "title", "Manaos Cola")
+// //     newProd.updateProduct(2, "title", "Manaos Cola")
     
 //     .then(() => newProd.getProducts())
 //     .then((products) => {
@@ -168,3 +168,5 @@ newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123"
 //     .catch((error) => {
 //         console.log(error);
 //     });
+    
+    export default productManager;
