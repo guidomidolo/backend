@@ -1,11 +1,21 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <p class="display-2">Nombre: {{nombre}}</p>
-            <p class="display-2">Apellido: {{apellido}}</p>
-            <p class="display-2">Edad: {{edad}}</p>
-            <p class="display-2">Correo: {{correo}}</p>
-            <p class="display-2">Teléfono: {{telefono}}</p>
+            <p class="display-1">Hola <b>{{user.nombre}} {{user.apellido}}</b>.</p>
+            {{#if isAdmin}}
+                <p class="display-5">Menú de comidas.</p>
+                <ul>
+                    {{#each frutas}}
+                    <li>
+                        {{this.nombre}} ${{this.precio}}
+                    </li>
+                    {{/each}}
+                </ul>
+            {{else}}
+                <p>No tienes permisos para ver el listado.</p>
+            {{/if}}
         </div>
     </div>
 </div>
+
+<script src="js/script.js"></script>    
