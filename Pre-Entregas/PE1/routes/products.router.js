@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductManager } from "../../../Desafios/desafio3/ProductManager.js";
+import ProductManager from "../ProductManager.js";
 
 const productsRouter = Router();
 
@@ -36,6 +36,18 @@ productsRouter.get("/", async (req, res) => {
   productsRouter.delete("/:pid", async (req, res) => {
     try {
       const pid = req.params.pid;
+      const products = await productManager.getProducts();
+      const productExists = products.find((prod) => prod.id === Number(pid));
+      const response = productExists ? productExists: {error: `No se encontró el producto con el id ${pid} en nuestra base de datos`};
+      res.status(productExists ? 200 : 400).send(response);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  productsRouter.post("/:pid", async (req, res) => {
+    try {
+      let {title, description, code, price, stock, category} = req.body;
       const products = await productManager.getProducts();
       const productExists = products.find((prod) => prod.id === Number(pid));
       const response = productExists ? productExists: {error: `No se encontró el producto con el id ${pid} en nuestra base de datos`};

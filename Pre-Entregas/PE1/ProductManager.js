@@ -1,5 +1,5 @@
-const fs = require("fs");
-let arrayLocation = "arrayProductos.txt";
+import fs from "fs";
+let arrayLocation = "Products.json";
 
 class ProductManager {
     constructor(arrayProductos = []) {
@@ -148,18 +148,18 @@ class ProductManager {
     }
 }
 
-module.exports = { ProductManager };
 
-const newProd = new ProductManager();
 
-///////PRUEBAS AÑADIR PRODUCTOS
-newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
-    .then(() => newProd.addProduct("Pepsi", "Gaseosa sabor cola", 600, "Sin imagen", "P123", 20))
-    .then(() => newProd.addProduct("Coca Cola Zero", "Gaseosa sabor cola baja en azúcar", 750, "Sin imagen", "CC123", 20))
-    .then(() => newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20))
+// const newProd = new ProductManager();
+
+// ///////PRUEBAS AÑADIR PRODUCTOS
+// newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123", 10)
+//     .then(() => newProd.addProduct("Pepsi", "Gaseosa sabor cola", 600, "Sin imagen", "P123", 20))
+//     .then(() => newProd.addProduct("Coca Cola Zero", "Gaseosa sabor cola baja en azúcar", 750, "Sin imagen", "CC123", 20))
+//     .then(() => newProd.addProduct("Sprite", "Gaseosa sabor lima limón", 700, "Sin imagen", "S412", 20))
 
 // //////PRUEBA ACTUALIZAR PRODUCTO
-// //     newProd.updateProduct(2, "title", "Manaos Cola")
+//     newProd.updateProduct(2, "title", "Manaos Cola")
     
 //     .then(() => newProd.getProducts())
 //     .then((products) => {
@@ -168,5 +168,5 @@ newProd.addProduct("Coca cola", "Gaseosa sabor cola", 750, "Sin imagen", "CC123"
 //     .catch((error) => {
 //         console.log(error);
 //     });
-    
-    export default productManager;
+
+export default ProductManager;
