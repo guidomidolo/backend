@@ -46,14 +46,16 @@ class ProductManager {
         });
     }
 
-    addProduct(title, description, price, thumbnail, code, stock) {
+    addProduct(title, description, code, price, status, stock, category, thumbnails) {
         const producto = {
             title: title,
             description: description,
-            price: price,
-            thumbnail: thumbnail,
             code: code,
+            price: price,
+            status: status,
             stock: stock,
+            category:category,
+            thumbnails: thumbnails,
             id: this.getId()
         };
 
