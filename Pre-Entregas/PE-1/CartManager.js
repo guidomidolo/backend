@@ -27,7 +27,7 @@ class CartManager {
     }
     getCarts() {
         let carts = JSON.parse(fs.readFileSync(this.path, "utf-8"));
-
+        
         return carts;
     }
 
@@ -60,13 +60,14 @@ class CartManager {
     }
 
     addProductToCart(cid, pid) {
-        const cart = this.getCartById(cid);
-        let pos = cart.findIndex(item => item.id === pid);
+        this.carts = this.getCarts();
+        const cart = this.carts.find(item => item.id === cid);
+        let product = cart.products.find(item => item.product === pid);
         
-        if (pos > -1) {
-            cart[pos].quantity++;
+        if (product) {
+            product.quantity += 1;
         } else {
-            cart.push({product:pid, quantity:1});
+            cart.products.push({product:pid, quantity:1});
         }
         
         this.saveCart();

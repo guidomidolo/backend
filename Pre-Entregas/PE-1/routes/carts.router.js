@@ -39,7 +39,7 @@ cartsRouter.post("/:cid/products/:pid", (req, res) => {
     const cart = CM.getCartById(cid);
     
     if (cart) {
-        if (cart.addProductToCart(cid, pid)) {
+        if (CM.addProductToCart(cid, pid)) {
             res.send({status:"ok", message:"El producto se añadió correctamente."})
         } else {
             res.status(400).send({status:"error", message:"No se pudo agregar el producto al carrito."})
