@@ -16,7 +16,7 @@ class ProductManager {
 
     addProduct(product) {
         if (this.validateCode(product.code)) {
-            console.log("Error! Code exists!");
+            console.log("Error, ya existe un producto con ese código.");
 
             return false;
         } else {
@@ -24,7 +24,7 @@ class ProductManager {
             this.products = this.getProducts();
             this.products.push(producto);
             this.saveProducts();
-            console.log("Product added!");
+            console.log("Producto agregado correctamente.");
 
             return true;
         }
@@ -44,11 +44,11 @@ class ProductManager {
             this.products[pos].category = product.category;
             this.products[pos].thumbnails = product.thumbnails;
             this.saveProducts();
-            console.log("Product updated!");
+            console.log("Producto actualizado.");
 
             return true;
         } else {
-            console.log("Not found!");
+            console.log("No se encontró el producto.");
 
             return false;
         }
@@ -61,11 +61,11 @@ class ProductManager {
         if (pos > -1) {
             this.products.splice(pos, 1); (0,1)
             this.saveProducts();
-            console.log("Product #" + id + " deleted!");
+            console.log("Producto #" + id + " eliminado.");
 
             return true;
         } else {
-            console.log("Not found!");
+            console.log("No se encontró el producto.");
 
             return false;
         }
@@ -80,7 +80,7 @@ class ProductManager {
     getProductById(id) {
         this.products = JSON.parse(fs.readFileSync(this.path, "utf-8"));
 
-        return this.products.find(item => item.id === id) || "Not found";
+        return this.products.find(item => item.id === id) || "No se encontró el producto.";
     }
 
     validateCode(code) {

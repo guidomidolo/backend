@@ -6,7 +6,7 @@ socket.on("realTimeProducts", (data) => {
     data.forEach(item => {
         salida +=   `<div class="col-md-3">
                         <div class="card border-0 my-3">
-                            <img src="${item.thumbnail}" class="img fluid" alt="${item.title}">
+                            <img src="${item.thumbnails}" class="img fluid" alt="${item.title}">
                             <div class="card-body text-left">
                             <p class="card-text">${item.title} <br/>ID #${item.id}</p>
                             <p class="card-text"><span class="text-success"><b>$${item.price}</b></span></p>
