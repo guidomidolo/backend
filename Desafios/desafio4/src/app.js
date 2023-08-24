@@ -6,7 +6,7 @@ import __dirname from "./utils.js"
 import ProductManager from "./ProductManager.js"
 
 import productsRouter from "./routes/products.router.js";
-import cartsRouter from "./routes/carts.router.js";
+// import cartsRouter from "./routes/carts.router.js";
 
 const app = express();
 const puerto = 8080;
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use("/", viewsRouter)
 app.use("/api/products/", productsRouter);
-app.use("/api/carts/", cartsRouter);
+// app.use("/api/carts/", cartsRouter);
 
 socketServer.on("connection", (socket) => {
     console.log("Nueva conexión.");
@@ -34,4 +34,17 @@ socketServer.on("connection", (socket) => {
     const PM = new ProductManager(); 
     const productos = PM.getProducts();
     socket.emit("realTimeProducts", productos)
+
+    socket.on("nuevoProducto", (data) => {
+        const producto = {title:data.title, description:"", code:"", price:data.price, status:"", stock:10, category:"", thumbnails:data.thumbnails};
+        PM.addProduct(producto);
+        const productos = PM.getProducts();
+        socket.emit("realTimeProducts", productos);
+    });
+
+    socket.on("eliminarProducto", (data) => {
+        PM.deleteProduct(parseInt(data));
+        const productos = PM.getProducts();
+        socket.emit("realTimeProducts", productos);
+    });
 })
