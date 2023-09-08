@@ -1,0 +1,53 @@
+import express from "express";
+import handlebars from "express-handlebars";
+import viewsRouter from "./routes/views.router.js";
+import {Server} from "socket.io";
+import __dirname from "./utils.js"
+import ProductManager from "./dao/ProductManager.js"
+import mongoose from "mongoose";
+
+import productsRouter from "./routes/products.router.js";
+import cartsRouter from "./routes/carts.router.js";
+
+const app = express();
+const puerto = 8080;
+const httpServer = app.listen(puerto, () => {
+    console.log("Servidor activo en el puerto: " + puerto);
+});
+
+const socketServer = new Server(httpServer);
+
+// DEFINIR PLANTILLAS EN SERVIDOR HTTP
+
+app.engine("handlebars", handlebars.engine());
+app.set("views", __dirname + "/views");
+app.set("view engine", "handlebars");
+app.use(express.static(__dirname + "/public"));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use("/", viewsRouter)
+app.use("/api/products/", productsRouter);
+// app.use("/api/carts/", cartsRouter);
+
+mongoose.connect("mongodb+srv://Cluster80526:Canob1903@clusterguidocoder.hfqxzr1.mongodb.net/ecommerce?retryWrites=true&w=majority");
+
+socketServer.on("connection", (socket) => {
+    console.log("Nueva conexión.");
+    
+    const PM = new ProductManager(); 
+    const productos = PM.getProducts();
+    socket.emit("realTimeProducts", productos)
+
+    socket.on("nuevoProducto", (data) => {
+        const producto = {title:data.title, description:"", code:"", price:data.price, status:"", stock:10, category:"", thumbnails:data.thumbnails};
+        PM.addProduct(producto);
+        const productos = PM.getProducts();
+        socket.emit("realTimeProducts", productos);
+    });
+
+    socket.on("eliminarProducto", (data) => {
+        PM.deleteProduct(parseInt(data));
+        const productos = PM.getProducts();
+        socket.emit("realTimeProducts", productos);
+    });
+})
