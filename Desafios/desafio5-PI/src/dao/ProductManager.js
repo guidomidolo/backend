@@ -1,102 +1,63 @@
-import mongoose from "mongoose";
 import { productModel } from "./models/product.models.js";
 
 class ProductManager {
-    constructor() {
-        this.products = [];
-    }
+    async addProduct(product) {
+        try {
+        if (await this.validateCode(product.code)) {
+            console.log(`Error, ya existe un producto con el código + ${product.code}`);
 
-    addProduct(product) {
-        // if (this.validateCode(product.code)) {
-        //     console.log("Error, ya existe un producto con ese código.");
-
-        //     return false;
-        // } else {
-            const producto = {title:product.title, description:product.description, code:product.code, price:product.price, status:product.status, stock:product.stock, category:product.category, thumbnails:product.thumbnails};
-            productModel.create(producto);
-
+            return false;
+        } else {
+            await productModel.create(product);
+            console.log("Producto agregado correctamente.");
             return true;
-        // }
+        }
+    } catch (error) {
+        return false;
+    }
     }
 
-    updateProduct(id, product) {
-        
-        // this.products = this.getProducts();
-        // let pos = this.products.findIndex(item => item.id === id);
-        
-        // if (pos > -1) {
-        //     this.products[pos].title = product.title;
-        //     this.products[pos].description = product.description;
-        //     this.products[pos].code = product.code;
-        //     this.products[pos].price = product.price;
-        //     this.products[pos].status = product.status;
-        //     this.products[pos].stock = product.stock;
-        //     this.products[pos].category = product.category;
-        //     this.products[pos].thumbnails = product.thumbnails;
-        //     this.saveProducts();
-            productModel.updateOne({_id:id}, {product})
+    async updateProduct(id, product) {
+        try {
+            await productModel.updateOne({_id:id}, product)
             console.log("Producto actualizado.");
+            return true;
 
-        //     return true;
-        // } else {
-        //     console.log("No se encontró el producto.");
-
-        //     return false;
-        // }
-    }
-
-    deleteProduct(pid) {
-        return productModel.deleteOne({_id:pid});
-        // this.products = this.getProducts();
-        // let pos = this.products.findIndex(item => item.id === id);
-
-        // if (pos > -1) {
-        //     this.products.splice(pos, 1); (0,1)
-        //     console.log("Producto #" + id + " eliminado.");
-
-        //     return true;
-        // } else {
-        //     console.log("No se encontró el producto.");
-
-        //     return false;
-        // }
-    }
-
-    getProducts() {
-        try {    
-            return productModel.find().lean();
         } catch (error) {
-            return [];
+            return false;
         }
     }
 
-    getProductById(id) {
-        return productModel.find({id:id}).lean();
+    async deleteProduct(id) {
+        
+        try {
+            await productModel.deleteOne({_id:id});
+            return true;
+            
+        } catch (error) {
+            return false;
+        }
+    
     }
 
-    validateCode(code) {
-        return productModel.find({code:code}).lean();
+    async getProducts(limit) {
+        return await limit ? productModel.find().limit(limit).lean() : productModel.find().lean();
     }
 
-    generateId() {
-        let max = 0;
-        let products = this.getProducts();
-
-        products.forEach(item => {
-            if (item.id > max) {
-                max = item.id;
-            }
-        });
-
-        return max+1;
-        //return this.products.length > 0 ? this.products[this.products.length-1].id+1 : 1;
+    async getProductById(id) {
+        if (this.validateCode(id)){
+            return await productModel.find({id:id}).lean() || null;
+        } else {
+            console.log("No encontrado");
+            return null;
+        }
     }
 
-    saveProducts() {
-        fs.writeFileSync(this.path, JSON.stringify(this.products));
+
+    async validateCode(code) {
+        return await productModel.findOne({code:code}) || false;
     }
 }
 
-//module.exports = {ProductManager};
 
 export default ProductManager;

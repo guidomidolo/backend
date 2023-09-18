@@ -1,9 +1,9 @@
 {
   "type": "module",
-  "name": "pe-1",
+  "name": "clase10",
   "version": "1.0.0",
   "description": "",
-  "main": "CartManager.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
